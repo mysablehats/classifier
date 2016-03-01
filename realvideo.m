@@ -1,8 +1,8 @@
 function realVideo()
-persistent vid
-if exist('vid','var')
-    closepreview(vid)
-end
+% persistent vid
+% if exist('vid','var')
+%     closepreview(vid)
+% end
 % Define frame rate
 NumberFrameDisplayPerSecond=10;
  
@@ -64,22 +64,29 @@ persistent handlesmyskel;
 persistent myaxes;
 trigger(vid);
 [IM,~,metaData]=getdata(vid,1,'uint8');
- 
-if any(metaData.IsSkeletonTracked)==1
-    disp('Tracked')
-    
-    whichskeltodraw = sum(metaData.IsSkeletonTracked.*(1:6)); %if there is more than one this will overflow
-    try
-        skelskel = skeldraw(metaData.JointWorldCoordinates(:,:,whichskeltodraw),true);
-    catch
-        disp('something fishy')
-        disp(metaData.JointWorldCoordinates(:,:,whichskeltodraw))
+
+try
+    if any(metaData.IsSkeletonTracked)==1
+        disp(strcat('Tracked: ',num2str(sum(metaData.IsSkeletonTracked)),' skeletons.'))
+        for i = 1:length(metaData.IsSkeletonTracked)
+            %whichskeltodraw = sum(metaData.IsSkeletonTracked.*(1:6)); %if there is more than one this will overflow
+            if metaData.IsSkeletonTracked(i)==1
+                try
+                    skelskel = skeldraw(metaData.JointWorldCoordinates(:,:,i),true);
+                catch
+                    disp('something fishy')
+                    disp(metaData.JointWorldCoordinates(:,:,i))
+                end
+            end
+        end
     end
+catch
+    disp('Can''t draw! :/')
 end
 
 if isempty(handlesRaw)
    % if first execution, we create the figure objects
-   %subplot(2,2,1);
+   subplot(2,1,1);
    handlesRaw=imagesc(IM);
    title('CurrentImage');
  
@@ -92,21 +99,22 @@ if isempty(handlesRaw)
    %ylabel('Average value (au)');
    
    %my skeleton 
-   %subplot(2,2,[3 4]);
+   subplot(2,1,2);
    handlesmyskel=plot([]);
-   %myaxes = gca; %get(handlesmyskel,'Parent');
+   myaxes = gca; %get(handlesmyskel,'Parent');
 else
    % We only update what is needed
    set(handlesRaw,'CData',IM);
-   Value=mean(IM(:));
+   %Value=mean(IM(:));
    %OldValues=get(handlesPlot,'YData');
    %set(handlesPlot,'YData',[OldValues Value]);
    %%%
    if exist('skelskel','var')
-       set(handlesmyskel,'CData',skelskel)
+       plot3(skelskel(1,:),skelskel(2,:), skelskel(3,:))
+       %set(handlesmyskel,'CData',skelskel)
        set(myaxes,'XLim', [-1 1]);
        set(myaxes,'YLim', [-1 1]);
-       set(myaxes,'ZLim', [0 1]);
-       
+       set(myaxes,'ZLim', [-0 5]);
+       view(0,90);
    end
 end
