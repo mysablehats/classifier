@@ -62,19 +62,31 @@ persistent handlesRaw;
 persistent handlesPlot;
 persistent handlesmyskel;
 persistent myaxes;
+persistent n;
 trigger(vid);
 [IM,~,metaData]=getdata(vid,1,'uint8');
 
+if isempty(n)
+    n=0;
+end
+skelskel = [];
+% a = skeldraw(zeros(20,3),0); %%% this gives a size of 3x57
+skelskel = NaN*ones(3,6*57); %so this is all the possible drawable skeletons, with NaNs so that they are not drawn
 try
     if any(metaData.IsSkeletonTracked)==1
-        disp(strcat('Tracked: ',num2str(sum(metaData.IsSkeletonTracked)),' skeletons.'))
-        for i = 1:length(metaData.IsSkeletonTracked)
+        numskel = sum(metaData.IsSkeletonTracked);
+        
+        if n-numskel~=0 % check if there is a change in the number of skeletons
+           n=numskel;
+           disp(strcat('Tracked: ',num2str(numskel),' skeletons.'))
+        end
+        for i = 1:length(metaData.IsSkeletonTracked) %goes through metadata and see all skeletons that are tracked
             if metaData.IsSkeletonTracked(i)==1
                 %disp(metaData.JointWorldCoordinates(:,:,i))
                 try
-                    skelskel = skeldraw(metaData.JointWorldCoordinates(:,:,i),false);
+                    skelskel(:,1+(i-1)*57:i*57) = skeldraw(metaData.JointWorldCoordinates(:,:,i),false);
                 catch
-                    disp('something fishy')
+                    disp('something fishy. cant generate/draw skeleton. check skeldraw')
                     disp(metaData.JointWorldCoordinates(:,:,i))
                 end
             end
@@ -87,7 +99,7 @@ end
 if isempty(handlesRaw)
    % if first execution, we create the figure objects
    subplot(2,1,1);
-   handlesRaw=imagesc(IM);
+   handlesRaw=image(IM);
    title('CurrentImage');
  
    % Plot first value
@@ -121,14 +133,15 @@ if isempty(handlesRaw)
     0.2620   -0.3947    1.1648];
 
    subplot(2,1,2);
-   handlesmyskel=plot([]);
+   %handlesmyskel=plot([]);
     try
         skellines = skeldraw(sampleskel,0);
-        handlesmyskel = plot3(skellines(1,:),skellines(2,:), skellines(3,:))
+        handlesmyskel = plot3(skellines(1,:),skellines(2,:), skellines(3,:));
         myaxes = gca; %get(handlesmyskel,'Parent')
         set(myaxes,'XLim', [-1 1]);
         set(myaxes,'YLim', [-1 1]);
         set(myaxes,'ZLim', [-0 5]);
+        set(myaxes,'color', 'none');
         view(0,90);
     catch
         disp('cant initialize axes handle')
