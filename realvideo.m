@@ -63,12 +63,22 @@ persistent handlesPlot;
 persistent handlesmyskel;
 persistent myaxes;
 persistent n;
+persistent currentframe;
 trigger(vid);
 [IM,~,metaData]=getdata(vid,1,'uint8');
 
 if isempty(n)
     n=0;
 end
+if isempty(currentframe)
+    currentframe=0;
+else 
+    currentframe=currentframe+1;
+end
+if mod(currentframe,10) == 0
+    
+end
+
 skelskel = [];
 % a = skeldraw(zeros(20,3),0); %%% this gives a size of 3x57
 skelskel = NaN*ones(3,6*57); %so this is all the possible drawable skeletons, with NaNs so that they are not drawn
@@ -133,6 +143,7 @@ if isempty(handlesRaw)
     0.2620   -0.3947    1.1648];
 
    subplot(2,1,2);
+   %hold on
    %handlesmyskel=plot([]);
     try
         skellines = skeldraw(sampleskel,0);
@@ -141,7 +152,7 @@ if isempty(handlesRaw)
         set(myaxes,'XLim', [-1 1]);
         set(myaxes,'YLim', [-1 1]);
         set(myaxes,'ZLim', [-0 5]);
-        set(myaxes,'color', 'none');
+        set(myaxes,'Color', 'none');
         view(0,90);
     catch
         disp('cant initialize axes handle')
