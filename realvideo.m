@@ -137,7 +137,7 @@ else
    %%%
    if exist('skelskel','var')
        plot3(skelskel(1,:),skelskel(2,:), skelskel(3,:))
-       disp('reachedplot')
+       %disp('reachedplot')
        %set(handlesmyskel, 'XData',skelskel(1,:),'YData',skelskel(2,:),'ZData', skelskel(3,:))
        %set(handlesmyskel,'CData',skelskel)
        set(myaxes,'XLim', [-1 1]);
