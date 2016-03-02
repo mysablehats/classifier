@@ -124,16 +124,11 @@ if isempty(handlesRaw)
    handlesmyskel=plot([]);
     try
         skellines = skeldraw(sampleskel,0);
-        handlesmyskel = plot3(skellines(1,:),skellines(2,:), skellines(3,:))
-        myaxes = gca; %get(handlesmyskel,'Parent')
-        set(myaxes,'XLim', [-1 1]);
-        set(myaxes,'YLim', [-1 1]);
-        set(myaxes,'ZLim', [-0 5]);
-        view(0,90);
+        plot3(skellines(1,:),skellines(2,:), skellines(3,:))
     catch
         disp('cant initialize axes handle')
     end
-  
+   myaxes = gca; %get(handlesmyskel,'Parent');
 else
    % We only update what is needed
    set(handlesRaw,'CData',IM);
@@ -142,10 +137,13 @@ else
    %set(handlesPlot,'YData',[OldValues Value]);
    %%%
    if exist('skelskel','var')
-       %plot3(skelskel(1,:),skelskel(2,:), skelskel(3,:))
+       plot3(skelskel(1,:),skelskel(2,:), skelskel(3,:))
        %disp('reachedplot')
-       set(handlesmyskel, 'XData',skelskel(1,:),'YData',skelskel(2,:),'ZData', skelskel(3,:))
+       %set(handlesmyskel, 'XData',skelskel(1,:),'YData',skelskel(2,:),'ZData', skelskel(3,:))
        %set(handlesmyskel,'CData',skelskel)
-       
+       set(myaxes,'XLim', [-1 1]);
+       set(myaxes,'YLim', [-1 1]);
+       set(myaxes,'ZLim', [-0 5]);
+       view(0,90);
    end
 end
