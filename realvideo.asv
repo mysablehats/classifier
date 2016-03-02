@@ -70,9 +70,9 @@ try
         disp(strcat('Tracked: ',num2str(sum(metaData.IsSkeletonTracked)),' skeletons.'))
         for i = 1:length(metaData.IsSkeletonTracked)
             if metaData.IsSkeletonTracked(i)==1
-                %disp(metaData.JointWorldCoordinates(:,:,i))
+                disp(metaData.JointWorldCoordinates(:,:,i))
                 try
-                    skelskel = skeldraw(metaData.JointWorldCoordinates(:,:,i),false);
+                    [skelskel, ~] = skeldraw(metaData.JointWorldCoordinates(:,:,i),false);
                 catch
                     disp('something fishy')
                     disp(metaData.JointWorldCoordinates(:,:,i))
@@ -121,13 +121,13 @@ if isempty(handlesRaw)
     0.2620   -0.3947    1.1648];
 
    subplot(2,1,2);
-   handlesmyskel=plot([]);
-%    try
-%        [~ , handlesmyskel] = skeldraw(sampleskel,true);
-%    catch
-%        disp('cant initialize axes handle')
-%    end
-   myaxes = gca; %get(handlesmyskel,'Parent');
+    handlesmyskel=plot([]);
+   try
+       [~ , handlesmyskel] = skeldraw(sampleskel,true);
+   catch
+       disp('cant initialize axes handle')
+   end
+       myaxes = gca; %get(handlesmyskel,'Parent');
 else
    % We only update what is needed
    set(handlesRaw,'CData',IM);
@@ -137,7 +137,6 @@ else
    %%%
    if exist('skelskel','var')
        plot3(skelskel(1,:),skelskel(2,:), skelskel(3,:))
-       disp('reachedplot')
        %set(handlesmyskel, 'XData',skelskel(1,:),'YData',skelskel(2,:),'ZData', skelskel(3,:))
        %set(handlesmyskel,'CData',skelskel)
        set(myaxes,'XLim', [-1 1]);
